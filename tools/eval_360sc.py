@@ -13,7 +13,6 @@ import torch.nn as nn
 import torch.utils.data as data
 import torch.nn.functional as F
 from PIL import Image
-from segmentron.utils.visualize import colorize_mask
 import numpy as np
 
 from tabulate import tabulate
@@ -25,6 +24,42 @@ from segmentron.utils.distributed import synchronize, make_data_sampler, make_ba
 from segmentron.config import cfg
 from segmentron.utils.options import parse_args
 from segmentron.utils.default_setup import default_setup
+
+palette = [128, 64, 128, 
+244, 35, 232, 
+70, 70, 70, 
+102, 102, 156, 
+190, 153, 153, 
+153, 153, 153, 
+250, 170, 30,
+220, 220, 0, 
+107, 142, 35, 
+152, 251, 152, 
+70, 130, 180, 
+220, 20, 60, 
+# 255, 0, 0, 
+0, 0, 142, 
+# 0, 0, 70,
+# 0, 60, 100, 
+# 0, 80, 100, 
+# 0, 0, 230, 
+# 119, 11, 32
+]
+zero_pad = 256 * 3 - len(palette)
+
+
+NAME_CLASSES = ['terrain', 'sky', 'thin cloud', 'thick cloud']
+
+for i in range(zero_pad):
+    palette.append(0)
+
+
+def colorize_mask(mask):
+    # mask: numpy array of the mask
+    new_mask = Image.fromarray(mask.astype(np.uint8))
+    new_mask.putpalette(palette)
+
+    return new_mask
 
 
 class Evaluator(object):
@@ -40,10 +75,10 @@ class Evaluator(object):
 
         # dataset and dataloader
         # crop_size = cfg.TEST.CROP_SIZE
-        val_dataset = get_segmentation_dataset('skycloud360', split='val', mode='val', transform=input_transform, root=cfg.ROOT_PATH)
+        val_dataset = get_segmentation_dataset('skycloud360', split='test', mode='testval', transform=input_transform)
         # val_dataset = get_segmentation_dataset('stanford2d3d_pan', split='trainval', mode='val', transform=input_transform)
         val_sampler = make_data_sampler(val_dataset, False, args.distributed)
-        val_batch_sampler = make_batch_data_sampler(val_sampler, images_per_batch=4, drop_last=False)
+        val_batch_sampler = make_batch_data_sampler(val_sampler, images_per_batch=1, drop_last=False)
         self.val_loader = data.DataLoader(dataset=val_dataset,
                                           batch_sampler=val_batch_sampler,
                                           num_workers=cfg.DATASET.WORKERS,
@@ -91,12 +126,17 @@ class Evaluator(object):
             pixAcc, mIoU = self.metric.get()
             save_vis = True
             if save_vis:
+                output = torch.argmax(output, 1).squeeze(0).cpu().data.numpy()
                 output_col = colorize_mask(output)
                 output = Image.fromarray(output.astype(np.uint8))
-                name = name[0].split('/')[-1]
-                output.save('%s/%s' % (args.save, name))
-                output_col.save('%s/%s_color.png' % (args.save, name.split('.')[0]))
-                print('Saved to %s/%s' % (args.save, name))
+                name = filename[0].split('/')[-1]
+                img_np = image.squeeze().cpu().numpy().transpose(1, 2, 0)
+                img_np = (img_np * cfg.DATASET.STD + cfg.DATASET.MEAN) * 255
+                image = Image.fromarray(img_np.astype(np.uint8))
+                image.save('%s/%s_image.png' % ('output', name.split('.')[0]))
+                output.save('%s/%s' % ('output', name))
+                output_col.save('%s/%s_color.png' % ('output', name.split('.')[0]))
+                print('Saved to %s/%s' % ('output', name))
             logging.info("Sample: {:d}, validation pixAcc: {:.3f}, mIoU: {:.3f}".format(
                 i + 1, pixAcc * 100, mIoU * 100))
 
