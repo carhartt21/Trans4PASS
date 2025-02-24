@@ -16,7 +16,7 @@ TRAIN:
 TEST:
     BATCH_SIZE: 1
     TEST_MODEL_PATH: "workdirs/skycloud/trans4pass_plus_small_512x512/trans4pass_plus_small_512x512.pth"
-    CROP_SIZE: (512, 512)
+    CROP_SIZE: (1664, 832)
 
 SOLVER:
     OPTIMIZER: "adamw"
