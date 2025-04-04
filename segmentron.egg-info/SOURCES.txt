@@ -1,0 +1,9 @@
+LICENSE
+README.md
+setup.py
+/home/chge7185/repositories/Trans4PASS/segmentron/modules/csrc/vision.cpp
+/home/chge7185/repositories/Trans4PASS/segmentron/modules/csrc/criss_cross_attention/ca_cuda.cu
+segmentron.egg-info/PKG-INFO
+segmentron.egg-info/SOURCES.txt
+segmentron.egg-info/dependency_links.txt
+segmentron.egg-info/top_level.txt
