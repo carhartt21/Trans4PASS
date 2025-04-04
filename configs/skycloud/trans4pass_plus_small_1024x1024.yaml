@@ -6,17 +6,16 @@ DATASET:
     WORKERS: 4
 TRAIN:
     EPOCHS: 200
-    BATCH_SIZE: 16
-    CROP_SIZE: (512,512)
+    BATCH_SIZE: 2
+    CROP_SIZE: (1024,1024)
     BASE_SIZE: 1024
     BACKBONE_PRETRAINED_PATH: "pretrained/mit_b2.pth"
-    MODEL_SAVE_DIR: 'workdirs/skycloud/trans4pass_plus_small_512x512/'
+    MODEL_SAVE_DIR: 'workdirs/skycloud/trans4pass_plus_small_1024x1024/'
     APEX: False
 TEST:
     BATCH_SIZE: 1
-    TEST_MODEL_PATH: "workdirs/skycloud/trans4pass_plus_small_512x512/2025-04-03-15-48.pth"
+    TEST_MODEL_PATH: "workdirs/skycloud/trans4pass_plus_small_1024x1024/2025-04-03-17-48_epoch_200.pth"
     CROP_SIZE: (1664, 832)
-    EPOCH: 200
 
 SOLVER:
     OPTIMIZER: "adamw"

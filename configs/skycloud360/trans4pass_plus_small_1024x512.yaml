@@ -1,5 +1,5 @@
 DATASET:
-    NAME: "skycloud"
+    NAME: "skycloud360"
     MEAN: [0.485, 0.456, 0.406]
     STD: [0.229, 0.224, 0.225]
     IGNORE_INDEX: -1
@@ -8,15 +8,14 @@ TRAIN:
     EPOCHS: 200
     BATCH_SIZE: 16
     CROP_SIZE: (512,512)
-    BASE_SIZE: 1024
+    BASE_SIZE: 512
     BACKBONE_PRETRAINED_PATH: "pretrained/mit_b2.pth"
-    MODEL_SAVE_DIR: 'workdirs/skycloud/trans4pass_plus_small_512x512/'
+    MODEL_SAVE_DIR: 'workdirs/skycloud/trans4pass_plus_small_1024x512/'
     APEX: False
 TEST:
     BATCH_SIZE: 1
-    TEST_MODEL_PATH: "workdirs/skycloud/trans4pass_plus_small_512x512/2025-04-03-15-48.pth"
+    TEST_MODEL_PATH: "workdirs/skycloud/trans4pass_plus_small_512x512/trans4pass_plus_small_512x512.pth"
     CROP_SIZE: (1664, 832)
-    EPOCH: 200
 
 SOLVER:
     OPTIMIZER: "adamw"

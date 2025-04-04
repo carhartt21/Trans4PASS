@@ -5,6 +5,7 @@
 .vscode/*
 datasets
 pretrained
+tools/output
+output_1
 workdirs
 build/*
-segmentron*

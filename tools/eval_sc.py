@@ -65,7 +65,7 @@ class Evaluator(object):
 
         # dataset and dataloader
         # crop_size = cfg.TEST.CROP_SIZE
-        val_dataset = get_segmentation_dataset('skycloud360', split='test', mode='testval', transform=input_transform)
+        val_dataset = get_segmentation_dataset('skycloud', split='test', mode='testval', transform=input_transform)
         # val_dataset = get_segmentation_dataset('stanford2d3d_pan', split='trainval', mode='val', transform=input_transform)
         val_sampler = make_data_sampler(val_dataset, False, args.distributed)
         val_batch_sampler = make_batch_data_sampler(val_sampler, images_per_batch=1, drop_last=False)
@@ -111,6 +111,14 @@ class Evaluator(object):
 
             with torch.no_grad():
                 output = model.evaluate(image)
+                
+            output_argmax = torch.argmax(output, 1).squeeze(0).cpu().data.numpy()
+            target_np = target.squeeze(0).cpu().data.numpy()
+
+            # print("Output (argmax) - First 20 values:", output_argmax.flatten()[:20])
+            # print("Output (argmax) - Last 20 values:", output_argmax.flatten()[-20:])
+            # print("Target - First 20 values:", target_np.flatten()[:20])
+            # print("Target - Last 20 values:", target_np.flatten()[-20:])
 
             self.metric.update(output, target)
             pixAcc, mIoU = self.metric.get()
